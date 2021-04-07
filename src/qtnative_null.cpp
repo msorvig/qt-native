@@ -107,9 +107,10 @@ Control *createNativeWindowControl()
     return control;
 }
 
-void spinNativeEventLoopAndNeverReturn()
+void spinNativeEventLoop(int argc, char **argv, std::function<void(void)> startup)
 {
     cout << __PRETTY_FUNCTION__ << endl;
+    startup();
 }
 
 //

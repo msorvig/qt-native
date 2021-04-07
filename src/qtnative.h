@@ -39,6 +39,8 @@ public:
 protected:
     Control(ControlImp *imp);
     ControlImp *imp;
+
+    friend Control *createNativeWindowControl();
 };
 
 // Convenience functions for creating a native window and
@@ -46,7 +48,7 @@ protected:
 // taken care of by the hosting application, but we provide
 // stand-alone implementations here for demo and testing puroses.
 Control *createNativeWindowControl();
-void spinNativeEventLoopAndNeverReturn();
+void spinNativeEventLoop(int argc, char **argv, std::function<void(void)> startup);
 
 // A native push button
 //
