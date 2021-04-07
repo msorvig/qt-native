@@ -1,3 +1,6 @@
+#ifndef _QTNATIVE_H_
+#define _QTNATIVE_H_
+
 #include <tuple>
 #include <memory>
 #include <string_view>
@@ -16,7 +19,7 @@ public:
     ~Control();
     Control(const Control&) = delete;
     void operator=(const Control&) = delete;
-    
+
     // Parent controls visually embeds and owns child controls.
     void setParent(Control *parent);
     Control *parent() const;
@@ -26,13 +29,13 @@ public:
 
     void setVisible(bool visible);
     bool visible() const;
-    
+
     // Control owns a native contol. The spesific type is
     // platform dependent:
     //  - macOS: NSView *
     //  - web: emscripten::val * (containng HTML Element)
     //  - null: nullptr
-    // User code can access the control 
+    // User code can access the control
     void setNativeControl(void *native);
     void *nativeControl() const;
 
@@ -44,7 +47,7 @@ protected:
 };
 
 // Convenience functions for creating a native window and
-// spinning a native eventloop. Normally this would be
+// spinning a native eventloop. Normally this will be
 // taken care of by the hosting application, but we provide
 // stand-alone implementations here for demo and testing puroses.
 Control *createNativeWindowControl();
@@ -84,3 +87,5 @@ public:
 };
 
 } // namespace QtNative
+
+#endif
