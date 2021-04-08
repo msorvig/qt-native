@@ -4,9 +4,9 @@
 #include <qtnative.h>
 
 int main(int argc, char **argv) {
-    
+
     std::unique_ptr<QtNative::Control> window;
-    
+
     auto startup = [&window](){
         // Create Window
         window.reset(QtNative::createNativeWindowControl());
@@ -19,10 +19,10 @@ int main(int argc, char **argv) {
         button->setOnClickedCallback([](){
             std::cout << "Button Clicked" << std::endl;
         });
-    
+
         // Add username/password edit
         QtNative::UserCredentialsInput *userName = new QtNative::UserCredentialsInput();
-        userName->setCredentialsType(UserCredentialsInput::Username);
+        userName->setCredentialsType(QtNative::UserCredentialsInput::Username);
         userName->setParent(window.get());
         userName->setGeometry(10, 50, 100, 25);
         userName->setOnTextEnteredCallback([](std::string text){
@@ -30,13 +30,18 @@ int main(int argc, char **argv) {
         });
 
         QtNative::UserCredentialsInput *password = new QtNative::UserCredentialsInput();
-        userName->setCredentialsType(UserCredentialsInput::Password);
+        userName->setCredentialsType(QtNative::UserCredentialsInput::Password);
         password->setParent(window.get());
         password->setGeometry(150, 50, 100, 25);
         password->setOnTextEnteredCallback([](std::string text){
             std::cout << "password " << text << std::endl;
         });
-    
+
+        QtNative::VideoPlayer *videoPlayer = new QtNative::VideoPlayer();
+        videoPlayer->setParent(window.get());
+        videoPlayer->setVideoSource("BigBuckBunny_512kb.mp4");
+        videoPlayer->setGeometry(10, 200, 200, 100);
+
         // Show window
         window->setVisible(true);
     };

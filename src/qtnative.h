@@ -86,6 +86,16 @@ public:
     void setOnTextEnteredCallback(std::function<void(std::string)> cb);
 };
 
+// Native Video Player
+class VideoPlayer: public Control  {
+public:
+    VideoPlayer();
+    ~VideoPlayer();
+
+    void setVideoSource(std::string_view source);
+    std::string videoSource();
+};
+
 } // namespace QtNative
 
 #endif

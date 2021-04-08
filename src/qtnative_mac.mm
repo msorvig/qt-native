@@ -4,18 +4,20 @@
 #include <iostream>
 
 #import <AppKit/AppKit.h>
+#import <AVFoundation/AVFoundation.h>
+#import <AVKit/AVKit.h>
 
 using namespace std;
 
 //
 // The macOS backend
-// 
+//
 // The macOS backend is implemented in terms of Cocoa/AppKit. The
 // native view type is NSView.
 //
 
 namespace QtNative {
-    
+
 //
 // Control for the macOS backend
 //
@@ -27,11 +29,11 @@ public:
     bool visible = false;
     void *native = nullptr;
     std::vector<Control *> children;
-    
+
     NSWindow *window = nil; // Optional, top-level Control only. FIXME: move to separate type
     NSView *view = nil;
 };
-    
+
 Control::Control()
 :imp(new ControlImp())
 {
@@ -50,7 +52,7 @@ Control::~Control()
 Control::Control(ControlImp *imp)
 :imp(imp)
 {
-    cout << __PRETTY_FUNCTION__ << endl;    
+    cout << __PRETTY_FUNCTION__ << endl;
 }
 
 void Control::setParent(Control *parent)
@@ -63,7 +65,7 @@ void Control::setParent(Control *parent)
     }
     imp->parent = parent;
     parent->imp->children.push_back(this);
-    
+
     // NSView superview/subview
     [parent->imp->view addSubview:imp->view];
 }
@@ -80,7 +82,7 @@ void Control::setGeometry(int x, int y, int width, int height)
     imp->geometry = make_tuple(x, y, width, height);
     int titlebar = 22;
     int flipy = imp->view.superview.frame.size.height - y - titlebar; // FIXME: flip correctly and handle parent change
-    imp->view.frame = NSMakeRect(x, flipy, width, height);  
+    imp->view.frame = NSMakeRect(x, flipy, width, height);
 }
 
 std::tuple<int, int, int, int> Control::geometry() const
@@ -121,7 +123,7 @@ Control *createNativeWindowControl()
 
     auto styleMask = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
                      NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable;
-    NSRect frame = NSMakeRect(200, 200, 320, 200);
+    NSRect frame = NSMakeRect(200, 200, 500, 300);
     auto window = [[NSWindow alloc] initWithContentRect:frame styleMask:styleMask
                                     backing:NSBackingStoreBuffered defer:NO];
     window.title = @"Qt Native Test Window";
@@ -153,7 +155,7 @@ Control *createNativeWindowControl()
     m_startup = startup;
     return self;
 }
-	
+
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
      cout << __PRETTY_FUNCTION__ << endl;
@@ -197,7 +199,7 @@ class PushButtonImp: public ControlImp
 {
 public:
     PushButtonImp() {
-        ControlImp::view = [NSButton buttonWithTitle:@"placeholder" target:target action:@selector(onClick)];        
+        ControlImp::view = [NSButton buttonWithTitle:@"placeholder" target:target action:@selector(onClick)];
     }
     QtNativePushButtonTarget *target = [QtNativePushButtonTarget new];
 };
@@ -311,5 +313,50 @@ void UserCredentialsInput::setOnTextEnteredCallback(std::function<void(std::stri
     cout << __PRETTY_FUNCTION__ << endl;
     static_cast<UserCredentialsInputImp *>(imp)->target.onTextEntered = cb;
 }
+
+//
+// VideoPlayer for the mac backend
+//
+class VideoPlayerImp: public ControlImp
+{
+public:
+    std::string videoSource;
+};
+
+VideoPlayer::VideoPlayer()
+:Control(new VideoPlayerImp)
+{
+    AVPlayerView *view = [AVPlayerView new];
+
+    view.showsFullScreenToggleButton = YES;
+    view.allowsPictureInPicturePlayback = YES;
+
+    Control::imp->view = view;
+
+    cout << __PRETTY_FUNCTION__ << endl;
+}
+
+VideoPlayer::~VideoPlayer()
+{
+    cout << __PRETTY_FUNCTION__ << endl;
+}
+
+void VideoPlayer::setVideoSource(std::string_view source)
+{
+    cout << __PRETTY_FUNCTION__ << " " << source << endl;
+
+    NSURL *url = [NSURL fileURLWithPath: [NSString stringWithUTF8String:std::string(source).c_str()]];
+    AVPlayerItem *item = [AVPlayerItem playerItemWithURL:url];
+    AVPlayer *player = [AVPlayer playerWithPlayerItem:item];
+    static_cast<AVPlayerView *>(Control::imp->view).player = player;
+    static_cast<VideoPlayerImp *>(Control::imp)->videoSource  = source;
+}
+
+std::string VideoPlayer::videoSource()
+{
+    cout << __PRETTY_FUNCTION__ << endl;
+    return static_cast<VideoPlayerImp *>(imp)->videoSource;
+}
+
 
 } // namespace QtNative

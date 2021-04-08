@@ -107,3 +107,24 @@ QtNativeUserCredentialsInput::CredentialsType QtNativeUserCredentialsInput::cred
     return QtNativeUserCredentialsInput::CredentialsType(
         static_cast<QtNative::UserCredentialsInput *>(QtNativeControl::m_control)->credentialsType());
 }
+
+//
+// QtNativeVideoPlayer
+//
+
+QtNativeVideoPlayer::QtNativeVideoPlayer(QObject *parent)
+    : QtNativeControl(new QtNative::VideoPlayer(), parent)
+{
+
+}
+
+void QtNativeVideoPlayer::setVideoSource(const QString &source)
+{
+    static_cast<QtNative::VideoPlayer *>(QtNativeControl::m_control)->setVideoSource(source.toStdString());
+}
+
+QString QtNativeVideoPlayer::videoSource() const
+{
+    return QString::fromStdString(static_cast<QtNative::VideoPlayer *>(QtNativeControl::m_control)->videoSource());
+}
+

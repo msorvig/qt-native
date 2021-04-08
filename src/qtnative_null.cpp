@@ -7,12 +7,12 @@ using namespace std;
 
 //
 // The Null backend
-// 
+//
 // The null backend prints the function name, and then does nothing.
 //
 
 namespace QtNative {
-    
+
 //
 // Control for the Null backend
 //
@@ -25,7 +25,7 @@ public:
     void *native = nullptr;
     std::vector<Control *> children;
 };
-    
+
 Control::Control()
 :imp(new ControlImp())
 {
@@ -44,7 +44,7 @@ Control::~Control()
 Control::Control(ControlImp *imp)
 :imp(imp)
 {
-    cout << __PRETTY_FUNCTION__ << endl;    
+    cout << __PRETTY_FUNCTION__ << endl;
 }
 
 void Control::setParent(Control *parent)
@@ -198,6 +198,38 @@ void UserCredentialsInput::setOnTextEnteredCallback(std::function<void(std::stri
     cout << __PRETTY_FUNCTION__ << endl;
     static_cast<UserCredentialsInputImp *>(imp)->onTextEntered = cb;
     static_cast<UserCredentialsInputImp *>(imp)->onTextEntered(static_cast<UserCredentialsInputImp *>(imp)->text);
+}
+
+//
+// VideoPlayer for the Null backend
+//
+class VideoPlayerImp: public ControlImp
+{
+public:
+    std::string videoSource;
+};
+
+VideoPlayer::VideoPlayer()
+:Control(new VideoPlayerImp)
+{
+    cout << __PRETTY_FUNCTION__ << endl;
+}
+
+VideoPlayer::~VideoPlayer()
+{
+    cout << __PRETTY_FUNCTION__ << endl;
+}
+
+void VideoPlayer::setVideoSource(std::string_view source)
+{
+    cout << __PRETTY_FUNCTION__ << " " << source << endl;
+    static_cast<VideoPlayerImp *>(imp)->videoSource  = source;
+}
+
+std::string VideoPlayer::videoSource()
+{
+    cout << __PRETTY_FUNCTION__ << endl;
+    return static_cast<VideoPlayerImp *>(imp)->videoSource;
 }
 
 } // namespace QtNative
