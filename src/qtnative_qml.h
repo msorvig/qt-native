@@ -2,9 +2,6 @@
 
 namespace QtNative {
     class Control;
-    class PushButton;
-    class UserCredentialsInput;
-    class VideoPlayer;
 }
 
 class QtNativeControl : public QObject {
@@ -32,7 +29,7 @@ protected:
     QtNative::Control *m_control = nullptr;
 };
 
-class QtNativePushButton : public QtNativeControl {
+class QtNativePushButton: public QtNativeControl {
      Q_OBJECT
     Q_PROPERTY(QString caption READ caption WRITE setCaption)
 public:
@@ -40,12 +37,9 @@ public:
 
     void setCaption(const QString &caption);
     QString caption() const;
-
-private:
-    QtNative::PushButton *m_pushbutton;
 };
 
-class QtNativeUserCredentialsInput : public QtNativeControl {
+class QtNativeUserCredentialsInput: public QtNativeControl {
     Q_OBJECT
     Q_PROPERTY(CredentialsType credentialsType READ credentialsType WRITE setCredentialsType)
 public:
@@ -56,9 +50,6 @@ public:
 
     void setCredentialsType(QtNativeUserCredentialsInput::CredentialsType credentialsType);
     QtNativeUserCredentialsInput::CredentialsType credentialsType() const;
-
-private:
-    QtNative::UserCredentialsInput *m_userCredentialsInput;
 };
 
 class QtNativeVideoPlayer: public QtNativeControl {
@@ -70,7 +61,4 @@ public:
 
     void setVideoSource(const QString &source);
     QString videoSource() const;
-
-private:
-    QtNative::VideoPlayer *m_videoPlayer;
 };
