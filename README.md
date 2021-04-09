@@ -19,6 +19,7 @@ Controls:
 
 * PushButton
 * UserCredentialsInput (username/password)
+* VideoPlayer
 
 Usage
 -----
@@ -30,3 +31,11 @@ this native instance can be added to the UI hiearchy. For example:
 
     QWindow *buttonWindow = QWindow::fromWinId((WId)button->nativeControl());
     QWiddget *buttonWidget = QWidget::createWindowContainer(buttonWindow);
+
+From QML: Register types from qtnative_quick.h, instantiate items from QML:
+
+    VideoPlayer {
+        width: 400
+        height: 200
+        videoSource: "BigBuckBunny_512kb.mp4"
+    }
