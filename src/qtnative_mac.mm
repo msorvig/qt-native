@@ -77,13 +77,13 @@ NSString * hierarchicalDescriptionOfView(NSView *view, NSUInteger level)
   NSString * titleString = ([view respondsToSelector:@selector(title)]) ? [NSString stringWithFormat:@"%@", [NSString stringWithFormat:@"\"%@\" ", [(NSButton *)view title]]] : @"";
 
   // Append our own description at this level
-  [builtHierarchicalString appendFormat:@"\n%@<%@: %p> %@(%li subviews)", tabString, [view className], view, titleString, [[view subviews] count]];  
-  [builtHierarchicalString appendFormat:@" hidden %d frame %@", view.hidden, NSStringFromRect(view.frame)];  
+  [builtHierarchicalString appendFormat:@"\n%@<%@: %p> %@(%li subviews)", tabString, [view className], view, titleString, [[view subviews] count]];
+  [builtHierarchicalString appendFormat:@" hidden %d frame %@", view.hidden, NSStringFromRect(view.frame)];
 
   // Recurse for each subview ...
   for (NSView * subview in [view subviews])
     [builtHierarchicalString appendString: hierarchicalDescriptionOfView(subview, (level + 1))];
-                                                                          
+
 
   return builtHierarchicalString;
 }
@@ -119,13 +119,13 @@ void Control::setParent(Control *parent)
 
     // NSView superview/subview
     [parent->imp->view addSubview:imp->view];
-    
+
     // apply geometry
     applyGeoometry(imp->view, imp->geometry);
-    
-    
+
+
 //    cout << " isFlipped " << isFLipped << endl;
-    
+
 //    cout << "view" << imp->view
 //    NSLog(@"%@", hierarchicalDescriptionOfView(parent->imp->view, 0));
 }
@@ -156,7 +156,7 @@ void Control::setVisible(bool visible)
     imp->view.hidden = !visible;
     if (NSWindow *window = imp->view.window) {
         if (window.contentView == imp->view)
-            [window makeKeyAndOrderFront:nil];        
+            [window makeKeyAndOrderFront:nil];
     }
 }
 
@@ -352,7 +352,7 @@ void UserCredentialsInput::setCredentialsType(UserCredentialsInput::CredentialsT
             view.contentType = NSTextContentTypePassword;
         break;
     }
-    
+
     view.delegate = static_cast<UserCredentialsInputImp *>(imp)->target;
     static_cast<UserCredentialsInputImp *>(imp)->view = view;
 }

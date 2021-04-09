@@ -22,7 +22,7 @@ protected:
     void geometryChange(const QRectF &newGeometry, const QRectF &oldGeometry) override;
     void windowChanged(QQuickWindow *window);
     void visibleChanged();
-    
+
     QtNativeControl *m_control = nullptr;
 };
 

@@ -31,7 +31,7 @@ QtNativeControlItem::~QtNativeControlItem()
     delete m_control;
 }
 
-void QtNativeControlItem::componentComplete() 
+void QtNativeControlItem::componentComplete()
 {
     qDebug() << __PRETTY_FUNCTION__;
     QQuickItem::componentComplete();
@@ -46,7 +46,7 @@ void QtNativeControlItem::geometryChange(const QRectF &newGeometry, const QRectF
 void QtNativeControlItem::windowChanged(QQuickWindow* window)
 {
     qDebug() << __PRETTY_FUNCTION__ << window;
-    
+
     // Create root window control for the new window and reparent this item to it.
     //
     // FIXME: root control management: we only need one per QQuickWindow, not one per QtNativeControlItem
@@ -66,7 +66,7 @@ void QtNativeControlItem::visibleChanged()
 QtNativePushButtonItem::QtNativePushButtonItem(QQuickItem *parent)
 :QtNativeControlItem(new QtNativePushButton(), parent)
 {
- 
+
 }
 
 void QtNativePushButtonItem::setCaption(const QString &caption)
@@ -85,7 +85,7 @@ QString QtNativePushButtonItem::caption() const
 QtNativeUserCredentialsInputItem::QtNativeUserCredentialsInputItem(QQuickItem *parent)
 :QtNativeControlItem(new QtNativeUserCredentialsInput(), parent)
 {
- 
+
 }
 
 void QtNativeUserCredentialsInputItem::setCredentialsType(QtNativeUserCredentialsInputItem::CredentialsType credentialsType)
@@ -106,7 +106,7 @@ QtNativeUserCredentialsInputItem::CredentialsType QtNativeUserCredentialsInputIt
 QtNativeVideoPlayerItem::QtNativeVideoPlayerItem(QQuickItem *parent)
 :QtNativeControlItem(new QtNativeVideoPlayer(), parent)
 {
- 
+
 }
 
 void QtNativeVideoPlayerItem::setVideoSource(const QString &source)

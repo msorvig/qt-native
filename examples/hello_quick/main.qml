@@ -4,7 +4,6 @@ import QtNative 0.1
 Rectangle {
     color: "steelblue"
 
-
     UserCredentialsInput  {
         id: password
         anchors.horizontalCenter: parent.horizontalCenter
@@ -13,7 +12,7 @@ Rectangle {
         height: 25
         credentialsType: UserCredentialsInput.Password
     }
-    
+
     Rectangle {
         id: rotatingBox
         color: "lightsteelblue"
@@ -29,7 +28,6 @@ Rectangle {
         }
     }
 
-    
     VideoPlayer {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom

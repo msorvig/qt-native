@@ -26,7 +26,7 @@ public:
     void setHeight(qreal height);
     qreal height() const;
     void setGeometry(qreal x, qreal y, qreal width, qreal height);
-    
+
     void setWindow(QWindow *window);
     void setParent(QtNativeControl *control);
 
