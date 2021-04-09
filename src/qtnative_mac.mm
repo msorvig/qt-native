@@ -30,7 +30,6 @@ public:
     void *native = nullptr;
     std::vector<Control *> children;
 
-    NSWindow *window = nil; // Optional, top-level Control only. FIXME: move to separate type
     NSView *view = nil;
 };
 
@@ -38,6 +37,13 @@ Control::Control()
 :imp(new ControlImp())
 {
     cout << __PRETTY_FUNCTION__ << endl;
+}
+
+Control::Control(void *nativeControl)
+:imp(new ControlImp())
+{
+    cout << __PRETTY_FUNCTION__ << endl;
+    imp->view = static_cast<NSView *>(nativeControl);
 }
 
 Control::~Control()
@@ -55,6 +61,51 @@ Control::Control(ControlImp *imp)
     cout << __PRETTY_FUNCTION__ << endl;
 }
 
+// https://stackoverflow.com/questions/4166879/how-to-print-a-control-hierarchy-in-cocoa
+NSString * hierarchicalDescriptionOfView(NSView *view, NSUInteger level)
+{
+
+  // Ready the description string for this level
+  NSMutableString * builtHierarchicalString = [NSMutableString string];
+
+  // Build the tab string for the current level's indentation
+  NSMutableString * tabString = [NSMutableString string];
+  for (NSUInteger i = 0; i <= level; i++)
+    [tabString appendString:@"\t"];
+
+  // Get the view's title string if it has one
+  NSString * titleString = ([view respondsToSelector:@selector(title)]) ? [NSString stringWithFormat:@"%@", [NSString stringWithFormat:@"\"%@\" ", [(NSButton *)view title]]] : @"";
+
+  // Append our own description at this level
+  [builtHierarchicalString appendFormat:@"\n%@<%@: %p> %@(%li subviews)", tabString, [view className], view, titleString, [[view subviews] count]];  
+  [builtHierarchicalString appendFormat:@" hidden %d frame %@", view.hidden, NSStringFromRect(view.frame)];  
+
+  // Recurse for each subview ...
+  for (NSView * subview in [view subviews])
+    [builtHierarchicalString appendString: hierarchicalDescriptionOfView(subview, (level + 1))];
+                                                                          
+
+  return builtHierarchicalString;
+}
+
+namespace {
+    void applyGeoometry(NSView *view, std::tuple<int, int, int, int> geometry) {
+
+        // We need a valid view, but also a valid parent view in
+        // order to resolve the geometry (possibly flipping it).
+        if (view == nil)
+            return;
+        if (view.superview == nil)
+            return;
+        bool isFLipped = view.superview.isFlipped;
+        bool isSuperContentView = view.window.contentView == view.superview;
+        auto [x, y, w, h] = geometry;
+        int titlebar = 22;
+        int flipy = isFLipped ? y : view.superview.frame.size.height - y -titlebar;
+        view.frame = NSMakeRect(x, flipy, w, h);
+    }
+}
+
 void Control::setParent(Control *parent)
 {
     cout << __PRETTY_FUNCTION__ << endl;
@@ -68,6 +119,15 @@ void Control::setParent(Control *parent)
 
     // NSView superview/subview
     [parent->imp->view addSubview:imp->view];
+    
+    // apply geometry
+    applyGeoometry(imp->view, imp->geometry);
+    
+    
+//    cout << " isFlipped " << isFLipped << endl;
+    
+//    cout << "view" << imp->view
+//    NSLog(@"%@", hierarchicalDescriptionOfView(parent->imp->view, 0));
 }
 
 Control *Control::parent() const
@@ -78,11 +138,9 @@ Control *Control::parent() const
 
 void Control::setGeometry(int x, int y, int width, int height)
 {
-    cout << __PRETTY_FUNCTION__ << endl;
+    cout << __PRETTY_FUNCTION__ << " isFlipped " << imp->view.superview.isFlipped << endl;
     imp->geometry = make_tuple(x, y, width, height);
-    int titlebar = 22;
-    int flipy = imp->view.superview.frame.size.height - y - titlebar; // FIXME: flip correctly and handle parent change
-    imp->view.frame = NSMakeRect(x, flipy, width, height);
+    applyGeoometry(imp->view, imp->geometry);
 }
 
 std::tuple<int, int, int, int> Control::geometry() const
@@ -96,8 +154,10 @@ void Control::setVisible(bool visible)
     cout << __PRETTY_FUNCTION__ << endl;
     imp->visible = visible;
     imp->view.hidden = !visible;
-    if (imp->window)
-        [imp->window makeKeyAndOrderFront:nil];
+    if (NSWindow *window = imp->view.window) {
+        if (window.contentView == imp->view)
+            [window makeKeyAndOrderFront:nil];        
+    }
 }
 
 bool Control::visible() const
@@ -106,9 +166,11 @@ bool Control::visible() const
     return imp->visible;
 }
 
-void Control::setNativeControl(void *native)
+void Control::setNativeControl(void *nativeControl)
 {
-    cout << __PRETTY_FUNCTION__ << endl;
+    cout << __PRETTY_FUNCTION__ << " " << nativeControl << endl;
+    imp->view = static_cast<NSView *>(nativeControl);
+    setVisible(true);
 }
 
 void *Control::nativeControl() const
@@ -123,17 +185,15 @@ Control *createNativeWindowControl()
 
     auto styleMask = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
                      NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable;
-    NSRect frame = NSMakeRect(200, 200, 500, 300);
+    NSRect frame = NSMakeRect(200, 200, 500, 400);
     auto window = [[NSWindow alloc] initWithContentRect:frame styleMask:styleMask
                                     backing:NSBackingStoreBuffered defer:NO];
     window.title = @"Qt Native Test Window";
     auto contentView = [[NSView alloc] init];
     window.contentView = contentView;
 
-    Control *control = new Control();
-    control->imp->view = contentView;
-    control->imp->window = window;
-    control->setVisible(false); // window is hidden by default, in order support hidden setup
+    Control *control = new Control(contentView);
+//    control->setVisible(false); // window is hidden by default, in order support hidden setup
 
     return control;
 }
@@ -279,7 +339,7 @@ UserCredentialsInput::~UserCredentialsInput()
 
 void UserCredentialsInput::setCredentialsType(UserCredentialsInput::CredentialsType credentialsType)
 {
-    cout << __PRETTY_FUNCTION__ << endl;
+    cout << __PRETTY_FUNCTION__  << " " << credentialsType << endl;
     static_cast<UserCredentialsInputImp *>(imp)->credentialsType = credentialsType;
     NSTextField *view = nil;
     switch (credentialsType) {
@@ -292,6 +352,7 @@ void UserCredentialsInput::setCredentialsType(UserCredentialsInput::CredentialsT
             view.contentType = NSTextContentTypePassword;
         break;
     }
+    
     view.delegate = static_cast<UserCredentialsInputImp *>(imp)->target;
     static_cast<UserCredentialsInputImp *>(imp)->view = view;
 }

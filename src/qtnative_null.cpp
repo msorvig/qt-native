@@ -32,6 +32,12 @@ Control::Control()
     cout << __PRETTY_FUNCTION__ << endl;
 }
 
+Control::Control(void *nativeControl)
+:imp(new ControlImp())
+{
+    cout << __PRETTY_FUNCTION__ << endl;
+}
+
 Control::~Control()
 {
     cout << __PRETTY_FUNCTION__ << endl;

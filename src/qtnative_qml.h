@@ -3,6 +3,7 @@
 namespace QtNative {
     class Control;
 }
+class QWindow;
 
 class QtNativeControl : public QObject {
      Q_OBJECT
@@ -24,6 +25,10 @@ public:
     qreal width() const;
     void setHeight(qreal height);
     qreal height() const;
+    void setGeometry(qreal x, qreal y, qreal width, qreal height);
+    
+    void setWindow(QWindow *window);
+    void setParent(QtNativeControl *control);
 
 protected:
     QtNative::Control *m_control = nullptr;

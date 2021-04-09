@@ -3,6 +3,8 @@
 
 #include <tuple>
 
+#include <QWindow>
+
 QtNativeControl::QtNativeControl(QObject *parent)
     :QObject(parent)
     ,m_control(new QtNative::Control())
@@ -64,6 +66,21 @@ void QtNativeControl::setHeight(qreal h)
 qreal QtNativeControl::height() const
 {
     return std::get<3>(m_control->geometry());
+}
+
+void QtNativeControl::setGeometry(qreal x, qreal y, qreal w, qreal h)
+{
+    m_control->setGeometry(x, y, w, h);
+}
+
+void QtNativeControl::setWindow(QWindow *window)
+{
+   m_control->setNativeControl(reinterpret_cast<void *>(window->winId()));
+}
+
+void QtNativeControl::setParent(QtNativeControl *control)
+{
+    m_control->setParent(control->m_control);
 }
 
 //

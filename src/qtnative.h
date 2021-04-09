@@ -17,6 +17,7 @@ class Control
 public:
     Control();
     ~Control();
+    explicit Control(void *nativeControl);
     Control(const Control&) = delete;
     void operator=(const Control&) = delete;
 
